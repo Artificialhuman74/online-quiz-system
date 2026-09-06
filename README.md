@@ -4,7 +4,13 @@ A console-based (command-line) multiple-choice quiz game written in C++. Players
 
 ## Team
 
-4-member team project. Roles assigned by random draw: Team Lead / Project Coordinator - Chiranth R. (PES1UG24AM354); Developer, Quiz Engine and Scoring - Tanvi B. Shetty (PES1UG24AM302); Developer, Question Bank and Admin Module - Abdul Mateen Shaikh (PES1UG24AM332); QA and Documentation Lead - Ashvin Ronald Lobo (PES1UG24AM345).
+**Team Lead / Project Coordinator** - Chiranth R. (PES1UG24AM354)
+
+**Developer, Quiz Engine and Scoring** - Tanvi B. Shetty (PES1UG24AM302) 
+
+**Developer, Question Bank and Admin Module** - Abdul Mateen Shaikh (PES1UG24AM332) 
+
+**QA and Documentation Lead** - Ashvin Ronald Lobo (PES1UG24AM345).
 
 ## Planned features
 
