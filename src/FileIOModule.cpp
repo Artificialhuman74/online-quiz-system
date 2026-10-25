@@ -62,6 +62,8 @@ std::string validateQuestion(const Question& q) {
 bool loadQuestions(const std::string& path, std::vector<Question>& out,
                    std::vector<std::string>& warnings, std::string& error) {
     out.clear();
+    warnings.clear();
+    error.clear();
     std::ifstream in(path);
     if (!in) { error = "Cannot open question bank: " + path; return false; }
 
@@ -95,7 +97,9 @@ bool loadQuestions(const std::string& path, std::vector<Question>& out,
 }
 
 bool saveQuestions(const std::string& path, const std::vector<Question>& qs, std::string& error) {
-    std::string tmp = path + ".tmp";
+    error.clear();
+    const std::string tmp = path + ".tmp";
+    const std::string bak = path + ".bak";
     {
         std::ofstream o(tmp, std::ios::trunc);
         if (!o) { error = "Cannot write " + tmp; return false; }
@@ -105,14 +109,28 @@ bool saveQuestions(const std::string& path, const std::vector<Question>& qs, std
               << q.options[0] << '|' << q.options[1] << '|' << q.options[2] << '|' << q.options[3]
               << '|' << q.correct << '\n';
         o.flush();
-        if (!o) { error = "Write failed for " + tmp; return false; }
+        if (!o) { o.close(); std::remove(tmp.c_str()); error = "Write failed for " + tmp; return false; }
     }
-    std::remove(path.c_str());   // rename() won't overwrite on Windows
-    if (std::rename(tmp.c_str(), path.c_str()) != 0) { error = "Could not replace " + path; return false; }
+
+    // Fast path: POSIX rename() replaces the target atomically.
+    if (std::rename(tmp.c_str(), path.c_str()) == 0) return true;
+
+    // Windows: rename() fails if the target exists. Move the original aside first,
+    // and restore it if the swap fails, so the original is never lost.
+    std::remove(bak.c_str());
+    bool hadOriginal = std::rename(path.c_str(), bak.c_str()) == 0;
+    if (std::rename(tmp.c_str(), path.c_str()) != 0) {
+        if (hadOriginal) std::rename(bak.c_str(), path.c_str());   // restore original
+        std::remove(tmp.c_str());
+        error = "Could not replace " + path + " (original left unchanged)";
+        return false;
+    }
+    std::remove(bak.c_str());
     return true;
 }
 
 bool saveResult(const std::string& path, Result r, std::string& error) {
+    error.clear();
     if (r.timestamp.empty()) r.timestamp = now();
     std::ofstream o(path, std::ios::app);
     if (!o) { error = "Cannot open results file: " + path; return false; }
@@ -124,6 +142,7 @@ bool saveResult(const std::string& path, Result r, std::string& error) {
 
 bool loadResults(const std::string& path, std::vector<Result>& out, std::vector<std::string>& warnings) {
     out.clear();
+    warnings.clear();
     std::ifstream in(path);
     if (!in) return true;   // no history yet
     std::string line;
