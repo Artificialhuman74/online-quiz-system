@@ -3,7 +3,8 @@
 #   cmake -DQUIZ=<quiz exe> -DINPUT=<name>.in -DEXPECT=<name>.expect -P run_system_test.cmake
 #
 # <name>.expect: each non-empty line not starting with '#' must appear in the program's
-# output, in that order. The program must exit with code 0. Avoid ';' in expect lines.
+# output, in that order. The program must exit with code 0. Avoid ';', '[' and ']' in
+# expect lines: CMake list handling splits or mangles them.
 
 foreach(var QUIZ INPUT EXPECT)
     if(NOT DEFINED ${var})
