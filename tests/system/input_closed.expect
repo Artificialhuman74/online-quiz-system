@@ -1,0 +1,3 @@
+# Closing the input mid-prompt (Ctrl+D / Ctrl+Z) exits cleanly instead of looping.
+Enter your name:
+Input closed. Goodbye!

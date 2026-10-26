@@ -1,0 +1,6 @@
+# QZ-F-042: non-numeric, out-of-range and empty input re-prompt instead of crashing.
+Invalid choice. Please enter a number from 1 to 4.
+Invalid choice. Please enter a number from 1 to 4.
+Invalid choice. Please enter a number from 1 to 4.
+Invalid choice. Please enter a number from 1 to 4.
+Goodbye!
