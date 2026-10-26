@@ -33,7 +33,11 @@ file(GLOB TEST_SOURCES CONFIGURE_DEPENDS
      ${CMAKE_SOURCE_DIR}/tests/test_*.cpp
      ${CMAKE_SOURCE_DIR}/src/test_*.cpp)
 foreach(test_src ${TEST_SOURCES})
+    # Prefix with the folder (tests_/src_) so the same file name in both places can't clash.
+    get_filename_component(test_dir ${test_src} DIRECTORY)
+    get_filename_component(test_dir ${test_dir} NAME)
     get_filename_component(test_name ${test_src} NAME_WE)
+    set(test_name ${test_dir}_${test_name})
     add_executable(${test_name} ${test_src})
     target_link_libraries(${test_name} PRIVATE quiz_modules)
     add_test(NAME ${test_name} COMMAND ${test_name} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
