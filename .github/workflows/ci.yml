@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-and-test:
+    # QZ-NF-005: must build on Windows, Linux and macOS with a standard C++17 compiler.
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+      - name: Build
+        run: cmake --build build --config Debug
+      - name: Test
+        run: ctest --test-dir build -C Debug --output-on-failure

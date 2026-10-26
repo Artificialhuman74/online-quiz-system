@@ -67,3 +67,8 @@ vcpkg_installed/
 # test output & cache
 Testing/
 .cache/
+
+# Quiz build outputs and runtime data
+/quiz
+/t
+data/results.txt

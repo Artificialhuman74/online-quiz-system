@@ -16,16 +16,52 @@ A console-based (command-line) multiple-choice quiz game written in C++. Players
 
 Main menu (Start Quiz, Leaderboard/History, Admin panel, Exit); category and difficulty selection before a quiz starts; multiple-choice questions with shuffled answer order per attempt; score calculation with a results summary and grade/remark; persistent question bank and results history in local files; password-protected admin workflow to add, edit, delete and view questions.
 
-See the project's SRS (Software Requirements Specification) document for the full functional and non-functional requirements.
+See the project's SRS (Software Requirements Specification) document in `docs/` for the full functional and non-functional requirements.
 
 ## Project structure
 
-src holds the C++ source files, data holds the question bank and results data files, and docs holds the SRS and other design docs.
+```
+src/        C++ sources, one .h/.cpp pair per module, plus main.cpp
+tests/      self-test programs, one test_<module>.cpp per module
+data/       question bank (questions.txt); results.txt is created at runtime
+docs/       SRS, test plan, UML diagrams, design docs
+```
+
+Modules (QZ-NF-004): `InputValidation`, `MenuModule`, `FileIOModule`, `QuizEngine`, `ScoringModule`, `AdminModule`. `main.cpp` only wires them together.
 
 ## Building
 
-Requires a C++17 (or later) compiler. Example: g++ -std=c++17 -o quiz src/main.cpp
+Requires a C++17 compiler (g++ 8+, clang 7+, or MSVC 2019+). Run all commands from the repository root, because the program reads `data/questions.txt` relative to the current directory.
+
+**With CMake (recommended, works on Windows, Linux and macOS):**
+
+```
+cmake -S . -B build
+cmake --build build
+./build/quiz                 (Windows: build\Debug\quiz.exe)
+ctest --test-dir build -C Debug --output-on-failure
+```
+
+**With g++ only:**
+
+```
+g++ -std=c++17 -Isrc -o quiz src/main.cpp $(ls src/*.cpp | grep -v -e main.cpp -e test_)
+./quiz
+```
+
+To build and run one test, for example: `g++ -std=c++17 -Isrc -o t tests/test_<module>.cpp src/<Module>.cpp && ./t`
+
+CMake picks up any new `src/*.cpp` and `tests/test_*.cpp` automatically, so you do not need to edit `CMakeLists.txt` when you add a module or a test.
+
+## Workflow
+
+`main` is the only permanent branch. All work happens on short-lived branches that are merged by pull request:
+
+- `feature/<name>` for code, `test/<name>` for tests, `docs/<name>` for documents.
+- Branch from the latest `main`. Keep a branch to 1–2 days of work.
+- Open a PR into `main` and request a review from at least one teammate. Merge only after an approval and a green CI run (GitHub Actions builds and tests on all three OSes).
+- Delete the branch after it is merged.
 
 ## Status
 
-Repository and requirements setup in progress. Implementation has not started yet.
+Repository structure, build system and CI are set up. Module implementation is in progress.
