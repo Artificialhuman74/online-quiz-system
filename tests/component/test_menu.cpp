@@ -1,5 +1,5 @@
-// Self-test for MenuModule. From the repo root:
-//   g++ -std=c++17 -Isrc -o t tests/test_menu.cpp src/MenuModule.cpp src/InputValidation.cpp && ./t
+// Component test for MenuModule + InputValidation. From the repo root:
+//   g++ -std=c++17 -Isrc -o t tests/component/test_menu.cpp src/MenuModule.cpp src/InputValidation.cpp && ./t
 #include "InputValidation.h"
 #include "MenuModule.h"
 #include <iostream>
