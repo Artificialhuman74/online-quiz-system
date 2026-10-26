@@ -1,0 +1,7 @@
+# Turn off CodeRabbit automatic reviews for this repository.
+reviews:
+  auto_review:
+    enabled: false
+  review_status: false
+chat:
+  auto_reply: false
