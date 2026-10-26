@@ -9,6 +9,11 @@
 //   AdminModule     - password-protected question management (QZ-F-030..034, QZ-SR-001/003/006)
 //
 // This file only wires the modules together; keep game logic out of it.
+//
+// PLACEHOLDERS: the Start Quiz, Leaderboard/History and Admin branches below only print a
+// "not connected yet" message, and the category list is hard-coded. Each one is marked
+// TODO(feature/integration) and is replaced once QuizEngine, ScoringModule, FileIOModule
+// and AdminModule are merged.
 #include "InputValidation.h"
 #include "MenuModule.h"
 #include <iostream>

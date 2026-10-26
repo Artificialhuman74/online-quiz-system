@@ -49,6 +49,12 @@ int main() {
         std::istringstream in("1\n");  std::ostringstream out;  CHECK(showResultsMenu(in, out) == ResultsChoice::Leaderboard);
     }
     {
+        std::istringstream in("2\n");
+        std::ostringstream out;
+        CHECK(showResultsMenu(in, out) == ResultsChoice::MyHistory);
+        for (const char* opt : {"Leaderboard", "My past attempts", "Back"}) CHECK(has(out.str(), opt));
+    }
+    {
         std::istringstream in("9\n3\n");  std::ostringstream out;  CHECK(showResultsMenu(in, out) == ResultsChoice::Back);
     }
 
