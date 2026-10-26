@@ -68,7 +68,12 @@ vcpkg_installed/
 Testing/
 .cache/
 
+<<<<<<< HEAD
 # Quiz build outputs and runtime data
 /quiz
 /t
 data/results.txt
+=======
+data/admin.cfg
+*.exe
+>>>>>>> 1d7dab4 (Add AdminModule with hashed password, lockout, and question management)
