@@ -1,0 +1,10 @@
+# ID|Category|Difficulty|Question|OptA|OptB|OptC|OptD|CorrectLetter
+1|General Knowledge|Easy|What is the capital of France?|Berlin|Madrid|Paris|Rome|C
+2|General Knowledge|Medium|Which planet has the most moons (as of 2023)?|Jupiter|Saturn|Uranus|Neptune|B
+3|General Knowledge|Hard|Who wrote the novel "One Hundred Years of Solitude"?|Pablo Neruda|Gabriel Garcia Marquez|Jorge Luis Borges|Mario Vargas Llosa|B
+4|Science|Easy|What gas do plants absorb for photosynthesis?|Oxygen|Nitrogen|Carbon dioxide|Hydrogen|C
+5|Science|Medium|What is the chemical symbol for sodium?|So|Sd|Na|S|C
+6|Science|Hard|Which particle carries the electromagnetic force?|Gluon|Photon|W boson|Graviton|B
+7|Math|Easy|What is 7 x 8?|54|56|58|64|B
+8|Math|Medium|What is the derivative of x^2?|x|2x|x^2|2|B
+9|Math|Hard|What is the value of the integral of 1/x dx from 1 to e?|0|1|e|2|B
