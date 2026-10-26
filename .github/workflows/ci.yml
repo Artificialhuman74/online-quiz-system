@@ -1,0 +1,95 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build-and-test:
+    # QZ-NF-005: must build and pass on Windows, Linux and macOS with a standard C++17 compiler.
+    name: Build and test (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+      - name: Build
+        run: cmake --build build --config Debug
+      - name: List tests
+        run: ctest --test-dir build -C Debug -N
+      - name: Unit tests
+        run: ctest --test-dir build -C Debug -L '^unit$' --output-on-failure --output-junit junit-unit.xml
+      - name: Component tests
+        if: ${{ !cancelled() }}
+        run: ctest --test-dir build -C Debug -L '^component$' --output-on-failure --output-junit junit-component.xml
+      - name: System tests
+        if: ${{ !cancelled() }}
+        run: ctest --test-dir build -C Debug -L '^system$' --output-on-failure --output-junit junit-system.xml
+      - name: Every test is in a level
+        # Catches a test that got no label and so was skipped by all three steps above.
+        if: ${{ !cancelled() }}
+        run: |
+          unlabelled=$(ctest --test-dir build -C Debug -N -LE '^(unit|component|system)$' | grep -c 'Test *#' || true)
+          if [ "$unlabelled" != "0" ]; then
+            ctest --test-dir build -C Debug -N -LE '^(unit|component|system)$'
+            echo "::error::$unlabelled test(s) are not unit, component or system; see tests/README.md"
+            exit 1
+          fi
+      - name: Upload test reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-${{ matrix.os }}
+          path: build/junit-*.xml
+          if-no-files-found: ignore
+      # Delivery: every push to main publishes a ready-to-run Release build for each OS.
+      # On Windows the C++ runtime is linked statically, so quiz.exe runs on a PC without
+      # Visual Studio or the VC++ redistributable installed.
+      - name: Build release
+        # Runs on every PR too, so a broken release build is caught before merge.
+        run: |
+          cmake -S . -B build-release -DCMAKE_BUILD_TYPE=Release -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
+          cmake --build build-release --config Release --target quiz
+      - name: Upload quiz binary
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: quiz-${{ matrix.os }}
+          path: |
+            build-release/quiz
+            build-release/Release/quiz.exe
+            data/questions.txt
+          if-no-files-found: error
+
+  sanitizers:
+    # Re-runs every test with AddressSanitizer + UndefinedBehaviorSanitizer to catch
+    # out-of-bounds access, use-after-free, leaks and undefined behaviour.
+    name: Tests with sanitizers (Linux)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Configure
+        run: >
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+          -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer -fno-sanitize-recover=all"
+          -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined"
+      - name: Build
+        run: cmake --build build
+      - name: All tests
+        run: ctest --test-dir build --output-on-failure
