@@ -22,6 +22,8 @@ Release builds. See `tests/unit/test_input_validation.cpp` for the pattern.
 - `<name>.expect` lists text that must appear in the output, in order: one snippet per line.
   Blank lines and lines starting with `#` are ignored.
 - The program must exit with code 0. When the input runs out, it exits cleanly.
+- Don't put `;` or `[` `]` in `.expect` lines. CMake treats them specially and can split or
+  mangle the line. Match a shorter snippet without them instead.
 
 ## Running locally
 

@@ -22,7 +22,7 @@ See the project's SRS (Software Requirements Specification) document in `docs/` 
 
 ```
 src/        C++ sources, one .h/.cpp pair per module, plus main.cpp
-tests/      self-test programs, one test_<module>.cpp per module
+tests/      unit/, component/ and system/ tests (see tests/README.md)
 data/       question bank (questions.txt); results.txt is created at runtime
 docs/       SRS, test plan, UML diagrams, design docs
 ```
@@ -44,16 +44,18 @@ ctest --test-dir build -C Debug --output-on-failure
 
 On Windows (Visual Studio generator), run `build\Debug\quiz.exe` instead of `./build/quiz`.
 
-**With g++ only:**
+**With g++ only (Linux, macOS, or Git Bash on Windows; not `cmd`):**
 
 ```
 g++ -std=c++17 -Isrc -o quiz src/main.cpp $(ls src/*.cpp | grep -v -e main.cpp -e test_)
 ./quiz
 ```
 
-To build and run one test, for example: `g++ -std=c++17 -Isrc -o t tests/test_<module>.cpp src/<Module>.cpp && ./t`
+In Windows `cmd` or PowerShell, use the CMake commands above, or list the files yourself: `g++ -std=c++17 -Isrc -o quiz.exe src/main.cpp src/<Module>.cpp ...`
 
-CMake picks up any new `src/*.cpp` and `tests/test_*.cpp` automatically, so you do not need to edit `CMakeLists.txt` when you add a module or a test.
+To build and run one test, for example: `g++ -std=c++17 -Isrc -o t tests/unit/test_<module>.cpp src/<Module>.cpp && ./t`
+
+CMake picks up any new `src/*.cpp` and any test under `tests/unit`, `tests/component` or `tests/system` automatically, so you do not need to edit `CMakeLists.txt` when you add a module or a test. See `tests/README.md`.
 
 ## Workflow
 
