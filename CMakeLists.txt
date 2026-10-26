@@ -26,19 +26,46 @@ endif()
 add_executable(quiz src/main.cpp)
 target_link_libraries(quiz PRIVATE quiz_modules)
 
-# One test executable per tests/test_*.cpp (and legacy src/test_*.cpp).
-# Tests run from the repo root so they can read data/questions.txt.
+# ---------------------------------------------------------------------------
+# Tests (see tests/README.md). Every test runs from the repo root so it can read data/.
+#   tests/unit/test_*.cpp       one module on its own              -> label "unit"
+#   tests/component/test_*.cpp  several modules working together   -> label "component"
+#   tests/system/<name>.in      runs the real quiz program with    -> label "system"
+#                               <name>.in as keyboard input and checks <name>.expect
+# tests/test_*.cpp and src/test_*.cpp are also picked up and labelled "unit".
+# New files are found automatically; no need to edit this file.
+# ---------------------------------------------------------------------------
 enable_testing()
-file(GLOB TEST_SOURCES CONFIGURE_DEPENDS
-     ${CMAKE_SOURCE_DIR}/tests/test_*.cpp
-     ${CMAKE_SOURCE_DIR}/src/test_*.cpp)
-foreach(test_src ${TEST_SOURCES})
-    # Prefix with the folder (tests_/src_) so the same file name in both places can't clash.
+
+file(GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS ${CMAKE_SOURCE_DIR}/tests/test_*.cpp)
+file(GLOB LEGACY_TEST_SOURCES CONFIGURE_DEPENDS ${CMAKE_SOURCE_DIR}/src/test_*.cpp)
+foreach(test_src ${TEST_SOURCES} ${LEGACY_TEST_SOURCES})
+    # Prefix with the folder (unit_, component_, tests_, src_) so equal file names can't clash.
     get_filename_component(test_dir ${test_src} DIRECTORY)
     get_filename_component(test_dir ${test_dir} NAME)
     get_filename_component(test_name ${test_src} NAME_WE)
     set(test_name ${test_dir}_${test_name})
+    if(test_dir STREQUAL "tests" OR test_dir STREQUAL "src")
+        set(test_label unit)
+    else()
+        set(test_label ${test_dir})
+    endif()
     add_executable(${test_name} ${test_src})
     target_link_libraries(${test_name} PRIVATE quiz_modules)
     add_test(NAME ${test_name} COMMAND ${test_name} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+    set_tests_properties(${test_name} PROPERTIES LABELS ${test_label} TIMEOUT 60)
+endforeach()
+
+file(GLOB SYSTEM_TEST_INPUTS CONFIGURE_DEPENDS ${CMAKE_SOURCE_DIR}/tests/system/*.in)
+foreach(input ${SYSTEM_TEST_INPUTS})
+    get_filename_component(name ${input} NAME_WE)
+    get_filename_component(dir ${input} DIRECTORY)
+    add_test(NAME system_${name}
+             COMMAND ${CMAKE_COMMAND}
+                     -DQUIZ=$<TARGET_FILE:quiz>
+                     -DINPUT=${input}
+                     -DEXPECT=${dir}/${name}.expect
+                     -P ${CMAKE_SOURCE_DIR}/tests/system/run_system_test.cmake
+             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+    set_tests_properties(system_${name} PROPERTIES LABELS system TIMEOUT 60)
 endforeach()

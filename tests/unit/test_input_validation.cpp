@@ -1,5 +1,5 @@
 // Self-test for InputValidation. From the repo root:
-//   g++ -std=c++17 -Isrc -o t tests/test_input_validation.cpp src/InputValidation.cpp && ./t
+//   g++ -std=c++17 -Isrc -o t tests/unit/test_input_validation.cpp src/InputValidation.cpp && ./t
 #include "InputValidation.h"
 #include <iostream>
 #include <sstream>
