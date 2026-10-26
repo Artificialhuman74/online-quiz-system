@@ -38,9 +38,11 @@ Requires a C++17 compiler (g++ 8+, clang 7+, or MSVC 2019+). Run all commands fr
 ```
 cmake -S . -B build
 cmake --build build
-./build/quiz                 (Windows: build\Debug\quiz.exe)
+./build/quiz
 ctest --test-dir build -C Debug --output-on-failure
 ```
+
+On Windows (Visual Studio generator), run `build\Debug\quiz.exe` instead of `./build/quiz`.
 
 **With g++ only:**
 
