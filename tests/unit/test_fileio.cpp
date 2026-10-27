@@ -103,6 +103,16 @@ int main() {
     assert(slurp("t_r.txt") == rbefore);                                                // nothing appended
     assert(loadResults("t_r.txt", rs, w, err) && rs.size() == 2 && rs[0].player == "Tanvix" && w.empty());
 
+    // ---- results: impossible calendar dates are rejected ----
+    auto stamp = [](const char* s) { return validateResult({"A", "Math", 1, 2, s}).empty(); };
+    assert(stamp("2026-12-31 23:59:59") && stamp("2024-02-29 00:00:00") && stamp("2000-02-29 12:00:00"));
+    assert(!stamp("2026-02-31 10:00:00") && !stamp("2026-02-30 10:00:00") && !stamp("2025-02-29 10:00:00"));
+    assert(!stamp("1900-02-29 10:00:00") && !stamp("2026-04-31 10:00:00") && !stamp("2026-06-31 10:00:00"));
+    assert(!stamp("2026-09-31 10:00:00") && !stamp("2026-11-31 10:00:00") && !stamp("2026-10-00 10:00:00"));
+    assert(!stamp("2026-00-10 10:00:00") && !stamp("2026-10-10 24:00:00") && !stamp("2026-10-10 10:60:00"));
+    assert(!saveResult("t_r.txt", {"A", "Math", 1, 2, "2026-02-31 10:00:00"}, err));   // not written
+    assert(slurp("t_r.txt") == rbefore);
+
     // ---- results: bad lines skipped; stale state cleared ----
     { std::ofstream o("t_r.txt", std::ios::app); o << "X|Math|9|5|2026-10-23 09:30:00\nY|Math|1|2|nope\njunk\n"; }
     w.push_back("stale"); err = "stale";
