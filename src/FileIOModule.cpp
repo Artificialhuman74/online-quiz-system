@@ -65,9 +65,13 @@ bool validTimestamp(const std::string& t) {
         else if (i == 13 || i == 16) { if (c != ':') return false; }
         else if (c < '0' || c > '9') return false;
     }
-    int mo = std::stoi(t.substr(5, 2)), d = std::stoi(t.substr(8, 2)), h = std::stoi(t.substr(11, 2)),
-        mi = std::stoi(t.substr(14, 2)), s = std::stoi(t.substr(17, 2));
-    return mo >= 1 && mo <= 12 && d >= 1 && d <= 31 && h < 24 && mi < 60 && s <= 60;
+    int y = std::stoi(t.substr(0, 4)), mo = std::stoi(t.substr(5, 2)), d = std::stoi(t.substr(8, 2)),
+        h = std::stoi(t.substr(11, 2)), mi = std::stoi(t.substr(14, 2)), s = std::stoi(t.substr(17, 2));
+    if (mo < 1 || mo > 12 || d < 1 || h > 23 || mi > 59 || s > 60) return false;
+    static const int daysInMonth[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    bool leap = (y % 4 == 0 && y % 100 != 0) || y % 400 == 0;
+    int maxDay = daysInMonth[mo - 1] + ((mo == 2 && leap) ? 1 : 0);   // rejects Feb 31, Apr 31, 29 Feb in non-leap years
+    return d <= maxDay;
 }
 
 // Replaces `to` with `from` in one step. On failure `to` is left untouched.
