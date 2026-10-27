@@ -57,6 +57,30 @@ To build and run one test, for example: `g++ -std=c++17 -Isrc -o t tests/unit/te
 
 CMake picks up any new `src/*.cpp` and any test under `tests/unit`, `tests/component` or `tests/system` automatically, so you do not need to edit `CMakeLists.txt` when you add a module or a test. See `tests/README.md`.
 
+## Admin panel
+
+Choose **Admin** from the main menu.
+
+- **First run:** you're asked to create a password (at least 6 characters). Only a salted hash is stored, in `data/admin.cfg`, which is git-ignored. To reset the password, delete that file.
+- **Lockout:** 3 wrong passwords in a row lock the panel until the program is restarted.
+- **Menu:** view questions (filter by category and difficulty), add, edit (press Enter to keep a field) and delete (asks for confirmation; the last remaining question can't be deleted).
+- Every change is validated and saved to `data/questions.txt` immediately.
+- The password is shown as you type, because hiding it isn't portable across Windows, Linux and macOS.
+
+## Data files
+
+**`data/questions.txt`** has one question per line:
+
+    ID|Category|Difficulty|Question|OptA|OptB|OptC|OptD|CorrectLetter
+
+- Difficulty is `Easy`, `Medium` or `Hard`, and the correct letter is `A` to `D`.
+- Text must not contain `|` or line breaks.
+- Lines starting with `#` are comments. Malformed or duplicate lines are skipped with a warning.
+
+**`data/results.txt`** (created automatically) has one attempt per line:
+
+    Player|Category|Score|Total|YYYY-MM-DD HH:MM:SS
+
 ## Workflow
 
 `main` is the only permanent branch. All work happens on short-lived branches that are merged by pull request:
