@@ -1,5 +1,5 @@
-// Self-test. From the repo root:
-//   g++ -std=c++17 -o t src/test_fileio.cpp src/FileIOModule.cpp && ./t      (t on Windows)
+   // Self-test. From the repo root:
+   //   g++ -std=c++17 -Isrc -o t tests/unit/test_fileio.cpp src/FileIOModule.cpp && ./t   (t on Windows)
 #include "FileIOModule.h"
 #include <cassert>
 #include <cstdio>
