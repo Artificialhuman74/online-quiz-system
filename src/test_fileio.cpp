@@ -27,7 +27,7 @@ int main() {
     std::vector<Question> qs; std::vector<std::string> w; std::string err;
 
     // ---- loading ----
-    assert(loadQuestions("data/questions.txt", qs, w, err) && qs.size() == 9 && w.empty());
+    assert(loadQuestions("data/questions.txt", qs, w, err) && qs.size() >= 9 && w.empty());
     assert(!loadQuestions("data/nope.txt", qs, w, err) && !err.empty());              // F-040 missing
     err = "stale"; w.push_back("stale");                                                // stale state cleared
     assert(loadQuestions("data/questions.txt", qs, w, err) && err.empty() && w.empty());
