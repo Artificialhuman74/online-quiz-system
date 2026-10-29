@@ -2,6 +2,7 @@
 #include "ScoringModule.h"
 #include <iostream>
 #include <sstream>
+#include <iomanip>
 using namespace ScoringModule;
 
 static int failures = 0;
@@ -59,6 +60,18 @@ int main() {
     CHECK(t.find("Skipped:         1") != std::string::npos);
     CHECK(t.find("70.0%") != std::string::npos);
     CHECK(t.find("Grade:           Good") != std::string::npos);
+
+    // Printing a summary must not change the caller's stream formatting.
+    std::ostringstream formatted;
+    formatted << std::scientific << std::setprecision(4);
+
+    const auto originalFlags = formatted.flags();
+    const auto originalPrecision = formatted.precision();
+
+    printSummary(summarize(7, 2, 1), formatted);
+
+    CHECK(formatted.flags() == originalFlags);
+    CHECK(formatted.precision() == originalPrecision);
 
     if (failures == 0) std::cout << "All ScoringModule tests passed.\n";
     return failures == 0 ? 0 : 1;

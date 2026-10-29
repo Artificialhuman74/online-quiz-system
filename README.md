@@ -18,6 +18,24 @@ Main menu (Start Quiz, Leaderboard/History, Admin panel, Exit); category and dif
 
 See the project's SRS (Software Requirements Specification) document in `docs/` for the full functional and non-functional requirements.
 
+
+## Scoring Rules
+
+The quiz percentage is calculated as:
+
+Percentage = (Correct Answers / Total Questions) × 100
+
+The total includes correct, incorrect, and skipped questions.
+
+| Percentage | Grade |
+|---|---|
+| 80% and above | Excellent |
+| 50% to below 80% | Good |
+| Below 50% | Needs Improvement |
+
+A quiz with zero questions has a percentage of 0%, avoiding division by zero. Results must not be saved when the total number of questions is zero.
+
+
 ## Project structure
 
 ```

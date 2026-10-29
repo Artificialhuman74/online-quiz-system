@@ -23,16 +23,25 @@ Summary summarize(int correct, int incorrect, int skipped) {
     return s;
 }
 
+
 void printSummary(const Summary& s, std::ostream& out) {
+    // Save the caller's formatting settings.
+    std::ios savedState(nullptr);
+    savedState.copyfmt(out);
+
     out << "\n==== Results ====\n"
         << "Total questions: " << s.total << '\n'
         << "Correct:         " << s.correct << '\n'
         << "Incorrect:       " << s.incorrect << '\n'
         << "Skipped:         " << s.skipped << '\n'
         << "Score:           " << s.correct << " / " << s.total << '\n'
-        << "Percentage:      " << std::fixed << std::setprecision(1) << s.percentage << "%\n"
+        << "Percentage:      " << std::fixed
+        << std::setprecision(1) << s.percentage << "%\n"
         << "Grade:           " << s.grade << '\n';
-    out.unsetf(std::ios::floatfield);
+
+    // Restore precision, float formatting, and other format settings.
+    out.copyfmt(savedState);
 }
+
 
 }  // namespace ScoringModule
