@@ -45,13 +45,20 @@ int main() {
     // ---- parseAnswer (QZ-F-012) ----
     char c = '?';
     CHECK(parseAnswer("A", c, false) && c == 'A');
+    CHECK(parseAnswer("a", c, false) && c == 'A');
+    CHECK(parseAnswer("B", c, false) && c == 'B');
+    CHECK(parseAnswer("c", c, false) && c == 'C');
     CHECK(parseAnswer(" d ", c, false) && c == 'D');
     CHECK(!parseAnswer("E", c, false));
     CHECK(!parseAnswer("AB", c, false));
     CHECK(!parseAnswer("", c, false));
     CHECK(!parseAnswer("1", c, false));
     CHECK(!parseAnswer("S", c, false));            // skip not allowed here
+    CHECK(!parseAnswer("s", c, false));
     CHECK(parseAnswer("s", c, true) && c == kSkip);  // QZ-F-014
+    CHECK(parseAnswer(" S ", c, true) && c == kSkip);
+    c = '?';
+    CHECK(!parseAnswer("E", c, true) && c == '?');   // failed parse leaves output untouched
 
     // ---- parseYesNo ----
     bool b = false;
@@ -61,6 +68,8 @@ int main() {
     CHECK(parseYesNo("No", b) && !b);
     CHECK(!parseYesNo("maybe", b));
     CHECK(!parseYesNo("", b));
+    b = true;
+    CHECK(!parseYesNo("yesterday", b) && b);        // whole token only; unchanged on failure
 
     // ---- checkText ----
     CHECK(checkText("Chiranth").empty());
@@ -68,8 +77,13 @@ int main() {
     CHECK(!checkText("   ").empty());
     CHECK(!checkText("a|b").empty());
     CHECK(!checkText(std::string("a\tb")).empty());
+    CHECK(!checkText(std::string("a\nb")).empty());
+    CHECK(!checkText(std::string("a\0b", 3)).empty());
     CHECK(!checkText(std::string(kMaxTextLength + 1, 'x')).empty());
     CHECK(checkText(std::string(kMaxTextLength, 'x')).empty());
+    CHECK(checkText("  trimmed  ").empty());
+    CHECK(!checkText("x", 0).empty());
+    CHECK(checkText("", 0) == "This cannot be empty.");
 
     // ---- read* re-prompt on invalid input, then return the valid value ----
     {
@@ -80,10 +94,10 @@ int main() {
         CHECK(count(out.str(), "> ") == 4);
     }
     {
-        std::istringstream in("x\nS\nb\r\n");  // S rejected when skip is off; CRLF tolerated
+        std::istringstream in("x\nS\nE\nb\r\n");  // invalid choices don't count; CRLF tolerated
         std::ostringstream out;
         CHECK(readAnswer("Answer: ", false, in, out) == 'B');
-        CHECK(count(out.str(), "Invalid answer") == 2);
+        CHECK(count(out.str(), "Invalid answer") == 3);
     }
     {
         std::istringstream in("s\n");
@@ -115,6 +129,20 @@ int main() {
         std::ostringstream out;
         bool threw = false;
         try { readText("Name: ", kMaxTextLength, in, out); } catch (const InputClosed&) { threw = true; }
+        CHECK(threw);
+    }
+    {
+        std::istringstream in("");
+        std::ostringstream out;
+        bool threw = false;
+        try { readAnswer("Answer: ", true, in, out); } catch (const InputClosed&) { threw = true; }
+        CHECK(threw);
+    }
+    {
+        std::istringstream in("");
+        std::ostringstream out;
+        bool threw = false;
+        try { readYesNo("Sure? ", in, out); } catch (const InputClosed&) { threw = true; }
         CHECK(threw);
     }
 
