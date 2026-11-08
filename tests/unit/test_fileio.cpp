@@ -42,6 +42,18 @@ int main() {
     CHECK(loadQuestions("bad.txt", qs, w, err) && qs.size() == 1 && w.size() == 3);
     std::remove("bad.txt");
 
+    // ---- loadQuestions: file with only blank lines / comments = no valid questions (gap 7) ----
+    { std::ofstream o("blank.txt"); o << "\n# just a comment\n\n   \n"; }
+    CHECK(!loadQuestions("blank.txt", qs, w, err) && !err.empty());
+    std::remove("blank.txt");
+
+    // ---- loadQuestions: every line has wrong field count → all warned, file fails (gap 8) ----
+    { std::ofstream o("wrongfields.txt");
+      o << "1|Math|Easy|2+2?\n"           // 4 fields (too few)
+        << "2|Math|Easy|x?|a|b|c\n"; }    // 7 fields (too few)
+    CHECK(!loadQuestions("wrongfields.txt", qs, w, err) && w.size() == 2 && !err.empty());
+    std::remove("wrongfields.txt");
+
     // ---- validateQuestion: empty fields, '|', '\r', '\n' ----
     CHECK(validateQuestion(good(1)).empty());
     { Question q = good(1); q.options[2] = "";                    CHECK(!validateQuestion(q).empty()); }
@@ -54,6 +66,34 @@ int main() {
         q = good(1); q.options[3] += bad;  CHECK(!validateQuestion(q).empty());
     }
 
+    // ---- validateQuestion: extra field-level gaps (gaps 2–4) ----
+    { Question q = good(1); q.id = 0;      CHECK(!validateQuestion(q).empty()); }   // id == 0  (gap 2)
+    { Question q = good(1); q.id = -5;     CHECK(!validateQuestion(q).empty()); }   // id negative
+    { Question q = good(1); q.text = "";   CHECK(!validateQuestion(q).empty()); }   // empty text (gap 3)
+    { Question q = good(1); q.category = ""; CHECK(!validateQuestion(q).empty()); } // empty category (gap 4)
+
+    // ---- validateQuestion: all three valid difficulties ----
+    { Question q = good(1); q.difficulty = "Medium"; CHECK(validateQuestion(q).empty()); }
+    { Question q = good(1); q.difficulty = "Hard";   CHECK(validateQuestion(q).empty()); }
+
+    // ---- validateResult: score == total is valid (gap 5) ----
+    CHECK(validateResult({"Ali", "Math", 5, 5, "2026-10-23 09:30:00"}).empty());   // score == total
+    CHECK(validateResult({"Ali", "Math", 0, 1, "2026-10-23 09:30:00"}).empty());   // score == 0 is valid
+
+    // ---- validateResult: pipe / newline in player or category (gap 6) ----
+    CHECK(!validateResult({"Ali\rX", "Math", 1, 2, "2026-10-23 09:30:00"}).empty());  // \r in player
+    CHECK(!validateResult({"Ali\nX", "Math", 1, 2, "2026-10-23 09:30:00"}).empty());  // \n in player
+    CHECK(!validateResult({"Ali",  "Ma|th", 1, 2, "2026-10-23 09:30:00"}).empty());   // | in category
+
+    // ---- sanitize: direct tests (gap 1) ----
+    CHECK(sanitize("hello")       == "hello");          // unchanged
+    CHECK(sanitize("a|b")         == "ab");             // | stripped
+    CHECK(sanitize("a\nb")        == "ab");             // \n stripped
+    CHECK(sanitize("a\rb")        == "ab");             // \r stripped
+    CHECK(sanitize("|\n\r")       == "");               // all bad → empty after trim
+    CHECK(sanitize("  hello  ")   == "hello");          // leading/trailing whitespace trimmed
+    CHECK(sanitize("a|b\nc|d\r") == "abcd");            // multiple bad chars
+
     // ---- saveQuestions: happy path + overwrite ----
     std::remove("t_q.txt");
     std::vector<Question> bank = {good(1), good(2)};
@@ -63,6 +103,18 @@ int main() {
     std::vector<Question> back;
     CHECK(loadQuestions("t_q.txt", back, w, err) && back.size() == 2 && back[0].text == "Edited?");
     CHECK(!exists("t_q.txt.tmp") && !exists("t_q.txt.bak"));
+
+    // ---- saveQuestions: round-trip fidelity with Medium difficulty (gap 9) ----
+    // Uses a separate temp file so it does not disturb the state of t_q.txt.
+    {
+        std::vector<Question> med = {good(10)};
+        med[0].difficulty = "Medium";
+        CHECK(saveQuestions("t_med.txt", med, err));
+        std::vector<Question> reloaded;
+        CHECK(loadQuestions("t_med.txt", reloaded, w, err) && reloaded.size() == 1
+              && reloaded[0].difficulty == "Medium");
+        std::remove("t_med.txt");
+    }
 
     // ---- saveQuestions: invalid banks are rejected and the file is untouched ----
     const std::string before = slurp("t_q.txt");
@@ -108,6 +160,15 @@ int main() {
     CHECK(slurp("t_r.txt") == rbefore);                                                // nothing appended
     CHECK(loadResults("t_r.txt", rs, w, err) && rs.size() == 2 && rs[0].player == "Tanvix" && w.empty());
 
+    // ---- saveResult: score == total is valid (gap 5) ----
+    CHECK(saveResult("t_r.txt", {"Ali", "Science", 5, 5, ts}, err));
+    CHECK(slurp("t_r.txt") != rbefore);  // a new line was actually appended
+
+    // ---- saveResult to an unwritable location (gap 10) ----
+    CHECK(!saveResult("no_such_dir/r.txt", {"A", "Math", 1, 2, ts}, err) && !err.empty());
+
+    std::remove("t_r.txt");
+
     // ---- results: impossible calendar dates are rejected ----
     auto stamp = [](const char* s) { return validateResult({"A", "Math", 1, 2, s}).empty(); };
     CHECK(stamp("2026-12-31 23:59:59") && stamp("2024-02-29 00:00:00") && stamp("2000-02-29 12:00:00"));
@@ -115,10 +176,14 @@ int main() {
     CHECK(!stamp("1900-02-29 10:00:00") && !stamp("2026-04-31 10:00:00") && !stamp("2026-06-31 10:00:00"));
     CHECK(!stamp("2026-09-31 10:00:00") && !stamp("2026-11-31 10:00:00") && !stamp("2026-10-00 10:00:00"));
     CHECK(!stamp("2026-00-10 10:00:00") && !stamp("2026-10-10 24:00:00") && !stamp("2026-10-10 10:60:00"));
-    CHECK(!saveResult("t_r.txt", {"A", "Math", 1, 2, "2026-02-31 10:00:00"}, err));   // not written
-    CHECK(slurp("t_r.txt") == rbefore);
+    // confirm nothing was written for the invalid date above
+    { std::string e2; CHECK(!saveResult("t_r.txt", {"A", "Math", 1, 2, "2026-02-31 10:00:00"}, e2)); }
+    CHECK(!exists("t_r.txt"));  // file was never created
 
     // ---- results: bad lines skipped; stale state cleared ----
+    // Seed t_r.txt with 2 valid records first, then append 3 bad lines.
+    CHECK(saveResult("t_r.txt", {"Priya", "Math", 3, 5, ts}, err));
+    CHECK(saveResult("t_r.txt", {"Rahul", "Science", 2, 5, ts}, err));
     { std::ofstream o("t_r.txt", std::ios::app); o << "X|Math|9|5|2026-10-23 09:30:00\nY|Math|1|2|nope\njunk\n"; }
     w.push_back("stale"); err = "stale";
     CHECK(loadResults("t_r.txt", rs, w, err) && rs.size() == 2 && w.size() == 3 && err.empty());
