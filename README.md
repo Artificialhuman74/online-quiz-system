@@ -83,7 +83,7 @@ Choose **Admin** from the main menu.
 - **Lockout:** 3 wrong passwords in a row lock the panel until the program is restarted.
 - **Menu:** view questions (filter by category and difficulty), add, edit (press Enter to keep a field) and delete (asks for confirmation; the last remaining question can't be deleted).
 - Every change is validated and saved to `data/questions.txt` immediately.
-- The password is shown as you type, because hiding it isn't portable across Windows, Linux and macOS.
+- On an interactive terminal, password characters are masked with `*` as you type. Piped/scripted input is read normally.
 
 ## Data files
 
