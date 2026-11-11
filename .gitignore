@@ -68,7 +68,6 @@ vcpkg_installed/
 Testing/
 .cache/
 
-<<<<<<< HEAD
 # Quiz build outputs and runtime data
 /quiz
 /t
