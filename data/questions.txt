@@ -1,10 +1,91 @@
 # ID|Category|Difficulty|Question|OptA|OptB|OptC|OptD|CorrectLetter
-1|General Knowledge|Easy|What is the capital of France?|Berlin|Madrid|Paris|Rome|C
-2|General Knowledge|Medium|Which planet has the most moons (as of 2023)?|Jupiter|Saturn|Uranus|Neptune|B
-3|General Knowledge|Hard|Who wrote the novel "One Hundred Years of Solitude"?|Pablo Neruda|Gabriel Garcia Marquez|Jorge Luis Borges|Mario Vargas Llosa|B
-4|Science|Easy|What gas do plants absorb for photosynthesis?|Oxygen|Nitrogen|Carbon dioxide|Hydrogen|C
-5|Science|Medium|What is the chemical symbol for sodium?|So|Sd|Na|S|C
-6|Science|Hard|Which particle carries the electromagnetic force?|Gluon|Photon|W boson|Graviton|B
-7|Math|Easy|What is 7 x 8?|54|56|58|64|B
-8|Math|Medium|What is the derivative of x^2?|x|2x|x^2|2|B
-9|Math|Hard|What is the value of the integral of 1/x dx from 1 to e?|0|1|e|2|B
+1|General Knowledge|Easy|What is the capital of France?|Berlin|Madrid|Rome|Paris|D
+2|General Knowledge|Easy|How many continents are there?|5|6|7|8|C
+3|General Knowledge|Easy|Which is the largest ocean on Earth?|Atlantic Ocean|Pacific Ocean|Indian Ocean|Arctic Ocean|B
+4|General Knowledge|Easy|Which animal is known as the King of the Jungle?|Lion|Tiger|Elephant|Leopard|A
+5|General Knowledge|Easy|How many days are there in a leap year?|365|364|367|366|D
+6|General Knowledge|Easy|Which colour do you get by mixing blue and yellow?|Orange|Purple|Green|Brown|C
+7|General Knowledge|Easy|Which country is the Taj Mahal located in?|Pakistan|India|Bangladesh|Nepal|B
+8|General Knowledge|Easy|What is the national animal of India?|Tiger|Lion|Elephant|Peacock|A
+9|General Knowledge|Easy|Which festival is known as the festival of lights?|Holi|Eid|Pongal|Diwali|D
+10|General Knowledge|Easy|Which language is mainly spoken in Brazil?|Spanish|French|English|Portuguese|D
+11|General Knowledge|Medium|Who wrote the play Romeo and Juliet?|Charles Dickens|Mark Twain|William Shakespeare|Jane Austen|C
+12|General Knowledge|Medium|What is the capital of Australia?|Sydney|Canberra|Melbourne|Perth|B
+13|General Knowledge|Medium|In which year did India gain independence?|1947|1942|1950|1935|A
+14|General Knowledge|Medium|What is the currency of Japan?|Won|Yuan|Ringgit|Yen|D
+15|General Knowledge|Medium|Who painted the Mona Lisa?|Michelangelo|Vincent van Gogh|Leonardo da Vinci|Pablo Picasso|C
+16|General Knowledge|Medium|Which is the smallest country in the world by area?|Monaco|Vatican City|San Marino|Liechtenstein|B
+17|General Knowledge|Medium|Which body organises the Summer Olympic Games?|International Olympic Committee|FIFA|United Nations|World Athletics|A
+18|General Knowledge|Medium|Who was the first Prime Minister of India?|Mahatma Gandhi|Sardar Patel|Lal Bahadur Shastri|Jawaharlal Nehru|D
+19|General Knowledge|Medium|Which is the largest hot desert in the world?|Gobi|Kalahari|Sahara|Thar|C
+20|General Knowledge|Medium|Which instrument has 88 keys on a standard model?|Organ|Accordion|Piano|Harp|C
+21|General Knowledge|Hard|Who wrote the novel One Hundred Years of Solitude?|Pablo Neruda|Gabriel Garcia Marquez|Jorge Luis Borges|Mario Vargas Llosa|B
+22|General Knowledge|Hard|Which treaty formally ended World War I with Germany?|Treaty of Versailles|Treaty of Paris|Treaty of Vienna|Treaty of Utrecht|A
+23|General Knowledge|Hard|Who was the first woman to win a Nobel Prize?|Mother Teresa|Rosalind Franklin|Dorothy Hodgkin|Marie Curie|D
+24|General Knowledge|Hard|Which city hosted the first modern Olympic Games in 1896?|Paris|London|Athens|Rome|C
+25|General Knowledge|Hard|What is the capital of Kazakhstan?|Almaty|Astana|Tashkent|Bishkek|B
+26|General Knowledge|Hard|Which ancient Indian empire was ruled by Ashoka?|Maurya Empire|Gupta Empire|Mughal Empire|Chola Empire|A
+27|General Knowledge|Hard|In which year did the Berlin Wall fall?|1961|1979|1991|1989|D
+28|General Knowledge|Hard|Which river flows through the city of Baghdad?|Euphrates|Nile|Tigris|Jordan|C
+29|General Knowledge|Hard|Which Indian mathematician is linked with the number 1729?|Aryabhata|Srinivasa Ramanujan|Brahmagupta|Bhaskara|B
+30|General Knowledge|Hard|Which philosopher wrote The Republic?|Aristotle|Plato|Socrates|Descartes|B
+31|Science|Easy|Which gas do plants absorb for photosynthesis?|Carbon dioxide|Oxygen|Nitrogen|Hydrogen|A
+32|Science|Easy|What is the chemical formula of water?|CO2|O2|NaCl|H2O|D
+33|Science|Easy|Which planet is known as the Red Planet?|Venus|Jupiter|Mars|Mercury|C
+34|Science|Easy|How many legs does a spider have?|6|8|10|4|B
+35|Science|Easy|Which force pulls objects towards the Earth?|Gravity|Friction|Magnetism|Tension|A
+36|Science|Easy|Which organ pumps blood around the human body?|Liver|Kidney|Lungs|Heart|D
+37|Science|Easy|At sea level, water boils at what temperature in degrees Celsius?|90|80|100|120|C
+38|Science|Easy|Which organs do humans use to breathe?|Kidneys|Lungs|Stomach|Liver|B
+39|Science|Easy|Which star is closest to Earth?|The Sun|Sirius|Proxima Centauri|Polaris|A
+40|Science|Easy|Which state of matter has a fixed shape and volume?|Solid|Liquid|Gas|Plasma|A
+41|Science|Medium|What is the chemical symbol for sodium?|So|Sd|S|Na|D
+42|Science|Medium|Which part of the cell is called its powerhouse?|Nucleus|Ribosome|Mitochondria|Golgi body|C
+43|Science|Medium|Which gas makes up most of Earth's atmosphere?|Oxygen|Nitrogen|Carbon dioxide|Argon|B
+44|Science|Medium|What is the SI unit of force?|Newton|Joule|Watt|Pascal|A
+45|Science|Medium|Which vitamin does the skin produce in sunlight?|Vitamin A|Vitamin C|Vitamin K|Vitamin D|D
+46|Science|Medium|What is the hardest natural substance?|Quartz|Steel|Diamond|Granite|C
+47|Science|Medium|What is the approximate speed of light in a vacuum?|150,000 km per second|300,000 km per second|30,000 km per second|3,000,000 km per second|B
+48|Science|Medium|Which blood cells help fight infection?|White blood cells|Red blood cells|Platelets|Plasma|A
+49|Science|Medium|What is the pH of pure water at 25 degrees Celsius?|0|5|14|7|D
+50|Science|Medium|Which planet has the most prominent ring system?|Mars|Mercury|Earth|Saturn|D
+51|Science|Hard|Which particle carries the electromagnetic force?|Gluon|W boson|Photon|Graviton|C
+52|Science|Hard|What is the atomic number of carbon?|12|6|8|4|B
+53|Science|Hard|Which law states that gas pressure and volume are inversely proportional at constant temperature?|Boyle's law|Charles's law|Ohm's law|Hooke's law|A
+54|Science|Hard|Which type of cell division produces gametes?|Mitosis|Binary fission|Budding|Meiosis|D
+55|Science|Hard|What is the most abundant element in the universe?|Helium|Oxygen|Hydrogen|Carbon|C
+56|Science|Hard|What is the SI unit of electrical resistance?|Volt|Ohm|Ampere|Farad|B
+57|Science|Hard|Which enzyme unwinds the DNA double helix during replication?|Helicase|Ligase|Polymerase|Primase|A
+58|Science|Hard|Who proposed the three laws of planetary motion?|Galileo Galilei|Isaac Newton|Nicolaus Copernicus|Johannes Kepler|D
+59|Science|Hard|What is the approximate age of the universe?|4.5 billion years|1.2 billion years|13.8 billion years|100 billion years|C
+60|Science|Hard|Which subatomic particle has no electric charge?|Proton|Electron|Neutron|Positron|C
+61|Math|Easy|What is 7 x 8?|54|56|58|64|B
+62|Math|Easy|What is 12 + 15?|27|26|28|25|A
+63|Math|Easy|What is 100 divided by 4?|20|24|40|25|D
+64|Math|Easy|How many sides does a hexagon have?|5|7|6|8|C
+65|Math|Easy|What is 9 squared?|72|81|18|99|B
+66|Math|Easy|Which is the next prime number after 7?|11|9|10|13|A
+67|Math|Easy|What is 15 percent of 200?|15|20|45|30|D
+68|Math|Easy|What is the value of pi to two decimal places?|3.41|3.12|3.14|3.16|C
+69|Math|Easy|What is the perimeter of a square with side length 5?|10|20|25|15|B
+70|Math|Easy|What is 1000 minus 357?|653|643|633|743|B
+71|Math|Medium|What is the derivative of x squared with respect to x?|2x|x|x squared|2|A
+72|Math|Medium|Solve for x: 2x + 6 = 14|3|5|10|4|D
+73|Math|Medium|What is the sum of the interior angles of a triangle?|90 degrees|270 degrees|180 degrees|360 degrees|C
+74|Math|Medium|What is the area of a circle of radius 7, using pi = 22/7?|44|154|49|308|B
+75|Math|Medium|What is the square root of 144?|12|11|14|16|A
+76|Math|Medium|What is 2 raised to the power 10?|512|2048|1000|1024|D
+77|Math|Medium|What is the highest common factor of 12 and 18?|3|2|6|36|C
+78|Math|Medium|What is the median of 3, 7, 9, 12, 15?|7|9|12|9.2|B
+79|Math|Medium|What are the roots of x squared minus 9 = 0?|3 and -3|3 only|9 and -9|0 and 3|A
+80|Math|Medium|How many diagonals does a pentagon have?|5|3|10|7|A
+81|Math|Hard|What is the integral of 1/x dx from 1 to e?|0|e|2|1|D
+82|Math|Hard|What is the value of sin 30 degrees?|1|0|0.5|0.866|C
+83|Math|Hard|What is the derivative of sin(x)?|-cos(x)|cos(x)|-sin(x)|tan(x)|B
+84|Math|Hard|In how many ways can the letters of the word CAT be arranged?|6|3|9|12|A
+85|Math|Hard|What is the sum of the first 100 natural numbers?|5000|5100|10100|5050|D
+86|Math|Hard|What is the determinant of the matrix with rows (1, 2) and (3, 4)?|2|10|-2|-10|C
+87|Math|Hard|What is the value of e correct to two decimal places?|2.17|2.72|3.14|2.81|B
+88|Math|Hard|What is the limit of sin(x)/x as x approaches 0?|1|0|infinity|does not exist|A
+89|Math|Hard|If log to base 10 of x equals 3, what is x?|30|300|10000|1000|D
+90|Math|Hard|What is the probability of getting two heads when tossing two fair coins?|1/2|1/3|3/4|1/4|D

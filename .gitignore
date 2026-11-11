@@ -73,7 +73,4 @@ Testing/
 /quiz
 /t
 data/results.txt
-=======
-data/admin.cfg
-*.exe
->>>>>>> 1d7dab4 (Add AdminModule with hashed password, lockout, and question management)
+/data/admin.cfg

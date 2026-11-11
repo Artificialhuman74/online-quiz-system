@@ -18,6 +18,24 @@ Main menu (Start Quiz, Leaderboard/History, Admin panel, Exit); category and dif
 
 See the project's SRS (Software Requirements Specification) document in `docs/` for the full functional and non-functional requirements.
 
+
+## Scoring Rules
+
+The quiz percentage is calculated as:
+
+Percentage = (Correct Answers / Total Questions) × 100
+
+The total includes correct, incorrect, and skipped questions.
+
+| Percentage | Grade |
+|---|---|
+| 80% and above | Excellent |
+| 50% to below 80% | Good |
+| Below 50% | Needs Improvement |
+
+A quiz with zero questions has a percentage of 0%, avoiding division by zero. Results must not be saved when the total number of questions is zero.
+
+
 ## Project structure
 
 ```
@@ -56,6 +74,30 @@ In Windows `cmd` or PowerShell, use the CMake commands above, or list the files 
 To build and run one test, for example: `g++ -std=c++17 -Isrc -o t tests/unit/test_<module>.cpp src/<Module>.cpp && ./t`
 
 CMake picks up any new `src/*.cpp` and any test under `tests/unit`, `tests/component` or `tests/system` automatically, so you do not need to edit `CMakeLists.txt` when you add a module or a test. See `tests/README.md`.
+
+## Admin panel
+
+Choose **Admin** from the main menu.
+
+- **First run:** you're asked to create a password (at least 6 characters). Only a salted hash is stored, in `data/admin.cfg`, which is git-ignored. To reset the password, delete that file.
+- **Lockout:** 3 wrong passwords in a row lock the panel until the program is restarted.
+- **Menu:** view questions (filter by category and difficulty), add, edit (press Enter to keep a field) and delete (asks for confirmation; the last remaining question can't be deleted).
+- Every change is validated and saved to `data/questions.txt` immediately.
+- The password is shown as you type, because hiding it isn't portable across Windows, Linux and macOS.
+
+## Data files
+
+**`data/questions.txt`** has one question per line:
+
+    ID|Category|Difficulty|Question|OptA|OptB|OptC|OptD|CorrectLetter
+
+- Difficulty is `Easy`, `Medium` or `Hard`, and the correct letter is `A` to `D`.
+- Text must not contain `|` or line breaks.
+- Lines starting with `#` are comments. Malformed or duplicate lines are skipped with a warning.
+
+**`data/results.txt`** (created automatically) has one attempt per line:
+
+    Player|Category|Score|Total|YYYY-MM-DD HH:MM:SS
 
 ## Workflow
 
