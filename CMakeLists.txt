@@ -65,6 +65,9 @@ foreach(input ${SYSTEM_TEST_INPUTS})
                      -DQUIZ=$<TARGET_FILE:quiz>
                      -DINPUT=${input}
                      -DEXPECT=${dir}/${name}.expect
+                     -DWORKDIR=${CMAKE_CURRENT_BINARY_DIR}/system-data/${name}
+                     -DQUESTIONS=${CMAKE_SOURCE_DIR}/data/questions.txt
+                     -DRESULTS=${dir}/${name}.results
                      -P ${CMAKE_SOURCE_DIR}/tests/system/run_system_test.cmake
              WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
     set_tests_properties(system_${name} PROPERTIES LABELS system TIMEOUT 60)

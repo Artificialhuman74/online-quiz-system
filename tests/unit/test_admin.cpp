@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <fstream>
 #include <iostream>
+#include <fstream>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -45,6 +46,27 @@ int main() {
         "demo123\n2\nScience\n1\nWhat is H2O?\nHydrogen\nWater\nOxygen\nSalt\nB\n5\n");
     CHECK(addOutput.find("Admin password created.") != std::string::npos);
     CHECK(addOutput.find("Question bank saved.") != std::string::npos);
+    std::ifstream passwordFile(passwordPath);
+    std::stringstream passwordContents;
+    passwordContents << passwordFile.rdbuf();
+    passwordFile.close();
+    CHECK(passwordContents.str().find("demo123") == std::string::npos);
+    std::istringstream passwordFields(passwordContents.str());
+    std::string salt, storedDigest, extraLine;
+    CHECK(static_cast<bool>(std::getline(passwordFields, salt)));
+    CHECK(static_cast<bool>(std::getline(passwordFields, storedDigest)));
+    CHECK(!salt.empty() && !storedDigest.empty() && storedDigest != "demo123");
+    CHECK(!std::getline(passwordFields, extraLine));
+    const std::string secondPasswordPath = "t_admin_password_second.cfg";
+    const std::string secondSetup = runAdmin(questionsPath, secondPasswordPath, "demo123\n5\n");
+    CHECK(secondSetup.find("Admin password created.") != std::string::npos);
+    std::ifstream secondPasswordFile(secondPasswordPath);
+    std::string secondSalt, secondDigest;
+    CHECK(static_cast<bool>(std::getline(secondPasswordFile, secondSalt)));
+    CHECK(static_cast<bool>(std::getline(secondPasswordFile, secondDigest)));
+    secondPasswordFile.close();
+    CHECK(!secondSalt.empty() && !secondDigest.empty());
+    CHECK(salt != secondSalt && storedDigest != secondDigest);
     std::vector<Question> bank;
     std::vector<std::string> warnings;
     CHECK(FileIOModule::loadQuestions(questionsPath, bank, warnings, error));
@@ -74,6 +96,7 @@ int main() {
 
     std::remove(questionsPath.c_str());
     std::remove(passwordPath.c_str());
+    std::remove(secondPasswordPath.c_str());
     if (failures) std::cerr << failures << " admin check(s) failed\n";
     return failures ? 1 : 0;
 }

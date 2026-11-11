@@ -19,6 +19,8 @@ Release builds. See `tests/unit/test_input_validation.cpp` for the pattern.
 ## System tests
 
 - `<name>.in` is fed to `quiz` as keyboard input, one line per Enter press.
+- Each system test runs with isolated build-directory data. An optional `<name>.results` file seeds its result history.
+- Prefix an expectation with `NOT:` to fail if that snippet appears anywhere in the output.
 - `<name>.expect` lists text that must appear in the output, in order: one snippet per line.
   Blank lines and lines starting with `#` are ignored.
 - The program must exit with code 0. When the input runs out, it exits cleanly.
