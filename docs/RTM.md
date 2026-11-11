@@ -2,7 +2,7 @@
 
 **Project:** Online Quiz System  
 **Document Version:** 1.0  
-**Associated SRS:** `docs/Online_Quiz_System_SRS.pdf` (v1.1)  
+**Associated SRS:** `docs/Online_Quiz_System_SRS.pdf` (v1.0)  
 **Associated Test Plan:** `docs/Online_Quiz_System_Test_Plan.pdf` (v1.1)  
 **Date:** November 2026  
 
@@ -18,7 +18,7 @@ The Requirements Traceability Matrix (RTM) establishes forward and backward trac
 
 ### Status Legend
 - **Passed**: Fully implemented and passing automated tests in the test suite.
-- **Implemented / Planned Test**: Core functionality implemented; specialized automated or manual test case planned.
+- **Partial**: Implemented or verified in part (e.g. basic unit handling exists, but full dedicated NFR test or manual validation is planned).
 - **Pending**: Planned for subsequent sprint / phase.
 
 ---
@@ -43,26 +43,26 @@ The Requirements Traceability Matrix (RTM) establishes forward and backward trac
 | **QZ-F-023** | Functional | Save completed attempt (player, category, score, total, timestamp) to persistent results file | `FileIOModule` | `TC-Score-04` | Unit (`tests/unit/test_fileio.cpp`) | `OQSSMP-20` | **Passed** |
 | **QZ-F-024** | Functional | Display leaderboard of top scores on request | `FileIOModule`, `MenuModule` | `TC-Score-05` | Component (`tests/component/test_menu.cpp`), System (`tests/system/results_menu.*`) | `OQSSMP-20` | **Passed** |
 | **QZ-F-025** | Functional | Allow player to view own past attempt history | `FileIOModule`, `MenuModule` | `TC-Score-06` | Component (`tests/component/test_menu.cpp`), System (`tests/system/results_menu.*`) | `OQSSMP-20` | **Passed** |
-| **QZ-F-030** | Functional | Provide password-protected admin menu to manage question bank | `AdminModule` | `TC-Admin-01` | Unit (`tests/unit/test_admin.cpp`) | `OQSSMP-21` | **Pending** |
-| **QZ-F-031** | Functional | Admin can add new question with 4 options, correct answer, category, and difficulty | `AdminModule`, `FileIOModule` | `TC-Admin-02` | Unit (`tests/unit/test_admin.cpp`) | `OQSSMP-14` | **Pending** |
-| **QZ-F-032** | Functional | Admin can edit or delete an existing question by ID | `AdminModule`, `FileIOModule` | `TC-Admin-03` | Unit (`tests/unit/test_admin.cpp`) | `OQSSMP-14` | **Pending** |
-| **QZ-F-033** | Functional | Admin can view all questions, optionally filtered by category or difficulty | `AdminModule`, `QuizEngine` | `TC-Admin-04` | Unit (`tests/unit/test_admin.cpp`) | `OQSSMP-14` | **Pending** |
+| **QZ-F-030** | Functional | Provide password-protected admin menu to manage question bank | `AdminModule` | `TC-Admin-01` | Unit (`tests/unit/test_admin.cpp`) | `OQSSMP-31` | **Pending** |
+| **QZ-F-031** | Functional | Admin can add new question with 4 options, correct answer, category, and difficulty | `AdminModule`, `FileIOModule` | `TC-Admin-02` | Unit (`tests/unit/test_admin.cpp`) | `OQSSMP-32` | **Pending** |
+| **QZ-F-032** | Functional | Admin can edit or delete an existing question by ID | `AdminModule`, `FileIOModule` | `TC-Admin-03` | Unit (`tests/unit/test_admin.cpp`) | `OQSSMP-32` | **Pending** |
+| **QZ-F-033** | Functional | Admin can view all questions, optionally filtered by category or difficulty | `AdminModule` | `TC-Admin-04` | Unit (`tests/unit/test_admin.cpp`) | `OQSSMP-32` | **Pending** |
 | **QZ-F-034** | Functional | Validate new/edited question has exactly 1 valid correct answer and non-empty options | `FileIOModule` | `TC-Admin-05` | Unit (`tests/unit/test_fileio.cpp`) | `OQSSMP-14` | **Passed** |
 | **QZ-F-040** | Functional | Load question bank from local file at startup; clear error if missing/corrupt | `FileIOModule` | `TC-Data-01` | Unit (`tests/unit/test_fileio.cpp`), System (`tests/system/startup.*`) | `OQSSMP-14` | **Passed** |
 | **QZ-F-041** | Functional | Persist question bank changes atomically immediately after edit | `FileIOModule` | `TC-Data-02` | Unit (`tests/unit/test_fileio.cpp`) | `OQSSMP-14` | **Passed** |
 | **QZ-F-042** | Functional | Handle non-numeric and out-of-range input without crashing; re-prompt user | `InputValidation` | `TC-Data-03` | Unit (`tests/unit/test_input_validation.cpp`), System (`tests/system/menu_invalid_input.*`) | `OQSSMP-24`, `OQSSMP-26` | **Passed** |
-| **QZ-NF-001** | Non-Functional | Load question bank and display first screen within 2 seconds | `FileIOModule`, `QuizEngine` | `TC-Perf-01` | System (`tests/system/run_system_test.cmake`), Performance benchmarks | `OQSSMP-23` | **Passed** |
-| **QZ-NF-002** | Non-Functional | Atomic file operations prevent data loss/corruption on unexpected termination | `FileIOModule` | `TC-Rel-01` | Unit (`tests/unit/test_fileio.cpp`) | `OQSSMP-24` | **Passed** |
-| **QZ-NF-003** | Non-Functional | Clear, unambiguous prompts and error messages for seamless user experience | `InputValidation`, `MenuModule` | `TC-UX-01` | Unit (`tests/unit/test_input_validation.cpp`), Component (`tests/component/test_menu.cpp`) | `OQSSMP-24` | **Passed** |
+| **QZ-NF-001** | Non-Functional | Load question bank and display first screen within 2 seconds | `FileIOModule`, `QuizEngine` | `TC-Perf-01` | System (`tests/system/run_system_test.cmake`), Performance benchmarks | `OQSSMP-23` | **Partial** |
+| **QZ-NF-002** | Non-Functional | Atomic file operations prevent data loss/corruption on unexpected termination | `FileIOModule` | `TC-Rel-01` | Unit (`tests/unit/test_fileio.cpp`) | `OQSSMP-24` | **Partial** |
+| **QZ-NF-003** | Non-Functional | Clear, unambiguous prompts and error messages for seamless user experience | `InputValidation`, `MenuModule` | `TC-UX-01` | Unit (`tests/unit/test_input_validation.cpp`), Component (`tests/component/test_menu.cpp`) | `OQSSMP-24` | **Partial** |
 | **QZ-NF-004** | Non-Functional | Modular code architecture (InputValidation, Menu, QuizEngine, Scoring, FileIO) | Source Structure | `TC-Maint-01` | Code Reviews, Architecture & Component Diagram | `OQSSMP-29` | **Passed** |
 | **QZ-NF-005** | Non-Functional | Cross-platform build on Windows, Linux, and macOS using standard C++17 | Build System | `TC-Port-01` | CI Matrix (`.github/workflows/ci.yml`) | `OQSSMP-24` | **Passed** |
-| **QZ-NF-006** | Non-Functional | Adding new categories or questions via data file requires zero code changes | `FileIOModule`, `MenuModule` | `TC-Maint-02` | Unit (`tests/unit/test_fileio.cpp`), Component (`tests/component/test_menu.cpp`) | `OQSSMP-14` | **Passed** |
-| **QZ-SR-001** | Security | Require valid admin password before granting question bank modification access | `AdminModule` | `TC-Sec-01` | Unit (`tests/unit/test_admin.cpp`) | `OQSSMP-22` | **Pending** |
+| **QZ-NF-006** | Non-Functional | Adding new categories or questions via data file requires zero code changes | `FileIOModule`, `MenuModule` | `TC-Maint-02` | Unit (`tests/unit/test_fileio.cpp`), Component (`tests/component/test_menu.cpp`) | `OQSSMP-14` | **Partial** |
+| **QZ-SR-001** | Security | Require valid admin password before granting question bank modification access | `AdminModule` | `TC-Sec-01` | Unit (`tests/unit/test_admin.cpp`) | `OQSSMP-31` | **Pending** |
 | **QZ-SR-002** | Security | Do not reveal correct answer on screen before player submits response | `QuizEngine` | `TC-Sec-02` | Unit (`tests/unit/test_quiz_engine.cpp`) | `OQSSMP-22` | **Passed** |
-| **QZ-SR-003** | Security | Store admin password in non-plaintext form (salted hash) | `AdminModule` | `TC-Sec-03` | Unit (`tests/unit/test_admin.cpp`) | `OQSSMP-22` | **Pending** |
+| **QZ-SR-003** | Security | Store admin password in non-plaintext form (salted hash) | `AdminModule` | `TC-Sec-03` | Unit (`tests/unit/test_admin.cpp`) | `OQSSMP-31` | **Pending** |
 | **QZ-SR-004** | Security | Validate and sanitize all file inputs; skip malformed records without crash | `FileIOModule` | `TC-Sec-04` | Unit (`tests/unit/test_fileio.cpp`) | `OQSSMP-21` | **Passed** |
 | **QZ-SR-005** | Security | Question-bank write access restricted to admin workflow; no player edit path | Architecture / UI | `TC-Sec-05` | Architecture verification, Code Review | `OQSSMP-22` | **Passed** |
-| **QZ-SR-006** | Security | Lock out admin menu after 3 consecutive failed password attempts | `AdminModule` | `TC-Sec-06` | Unit (`tests/unit/test_admin.cpp`) | `OQSSMP-22` | **Pending** |
+| **QZ-SR-006** | Security | Lock out admin menu after 3 consecutive failed password attempts | `AdminModule` | `TC-Sec-06` | Unit (`tests/unit/test_admin.cpp`) | `OQSSMP-31` | **Pending** |
 
 ---
 
@@ -73,5 +73,6 @@ The Requirements Traceability Matrix (RTM) establishes forward and backward trac
   - Non-Functional (`QZ-NF-*`): 6
   - Security (`QZ-SR-*`): 6
 - **Test Implementation Status:**
-  - **Passed (Verified with automated tests):** 30 requirements (~83.3%)
-  - **Pending (Admin module & timer feature):** 6 requirements (`QZ-F-013`, `QZ-F-030`, `QZ-F-031`, `QZ-F-032`, `QZ-F-033`, `QZ-SR-001`, `QZ-SR-003`, `QZ-SR-006`)
+  - **Passed (Verified with automated tests):** 24 requirements (66.7%)
+  - **Partial (Partially verified / dedicated test planned):** 4 requirements (11.1%) — `QZ-NF-001`, `QZ-NF-002`, `QZ-NF-003`, `QZ-NF-006`
+  - **Pending (Admin module & timer feature):** 8 requirements (22.2%) — `QZ-F-013`, `QZ-F-030`, `QZ-F-031`, `QZ-F-032`, `QZ-F-033`, `QZ-SR-001`, `QZ-SR-003`, `QZ-SR-006`
