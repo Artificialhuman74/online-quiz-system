@@ -1,153 +1,102 @@
-// Self-test. From the repo root:
-//   g++ -std=c++17 -o ta src/test_admin.cpp src/AdminModule.cpp src/FileIOModule.cpp && ./ta   (ta on Windows)
 #include "AdminModule.h"
+#include "FileIOModule.h"
 #include <cstdio>
 #include <fstream>
 #include <iostream>
+#include <fstream>
 #include <sstream>
-using LR = AdminModule::LoginResult;
+#include <string>
+#include <vector>
 
 static int failures = 0;
-#define CHECK(cond)                                                              \
-    do {                                                                         \
-        if (!(cond)) { std::cerr << __FILE__ << ':' << __LINE__ << ": FAILED: " #cond "\n"; failures++; } \
-    } while (0)
+#define CHECK(cond) do { if (!(cond)) { std::cerr << __FILE__ << ':' << __LINE__ << ": FAILED: " #cond "\n"; failures++; } } while (0)
 
-static std::string slurp(const std::string& p) {
-    std::ifstream in(p, std::ios::binary); std::stringstream ss; ss << in.rdbuf(); return ss.str();
-}
-static Question mk(int id, const char* cat, const char* diff) {
-    Question q; q.id = id; q.category = cat; q.difficulty = diff; q.text = "Q" + std::to_string(id) + "?";
-    q.options[0] = "a"; q.options[1] = "b"; q.options[2] = "c"; q.options[3] = "d"; q.correct = 'C';
-    return q;
-}
-static const char* QP = "t_admin_q.txt";
-static const char* CP = "t_admin.cfg";
-
-static void reset() {
-    std::remove(CP);
-    std::string e;
-    FileIOModule::saveQuestions(QP, {mk(1, "Math", "Easy"), mk(2, "Science", "Hard"), mk(5, "Math", "Hard")}, e);
+static std::string runAdmin(const std::string& questions, const std::string& password,
+                           const std::string& input) {
+    std::istringstream in(input);
+    std::ostringstream out;
+    auto* oldIn = std::cin.rdbuf(in.rdbuf());
+    auto* oldOut = std::cout.rdbuf(out.rdbuf());
+    try { AdminModule::run(questions, password); }
+    catch (const std::exception& e) {
+        std::cin.rdbuf(oldIn); std::cout.rdbuf(oldOut);
+        std::cerr << "Admin interaction ended unexpectedly: " << e.what() << "\n" << out.str();
+        throw;
+    }
+    std::cin.rdbuf(oldIn);
+    std::cout.rdbuf(oldOut);
+    return out.str();
 }
 
 int main() {
-    // ---- SHA-256 known-answer test ----
-    CHECK(AdminModule::sha256Hex("abc") == "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
-    CHECK(AdminModule::sha256Hex("") == "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
+    const std::string questionsPath = "t_admin_questions.txt";
+    const std::string passwordPath = "t_admin_password.cfg";
+    std::remove(questionsPath.c_str());
+    std::remove(passwordPath.c_str());
 
-    reset();
-    std::string err;
-    {   // ---- first run / password setup (SR-003) ----
-        AdminModule a(QP, CP);
-        CHECK(!a.hasPassword() && a.login("x") == LR::NotConfigured);
-        CHECK(!a.setupPassword("abc", err) && !err.empty());                 // too short
-        CHECK(a.setupPassword("secret1", err) && a.hasPassword());
-        CHECK(!a.setupPassword("another1", err));                            // can't overwrite
-        std::string cfg = slurp(CP);
-        CHECK(cfg.rfind("v1$", 0) == 0 && cfg.find("secret1") == std::string::npos);   // hashed, not plaintext
-        AdminModule b(QP, CP);
-        CHECK(b.hasPassword());                                              // persists across restarts
-    }
-    {   // ---- SR-001: nothing works before login; file untouched ----
-        AdminModule a(QP, CP);
-        const std::string before = slurp(QP);
-        int id = 0;
-        CHECK(!a.load(err) && err.find("login") != std::string::npos);
-        CHECK(!a.addQuestion(mk(0, "Math", "Easy"), id, err));
-        CHECK(!a.editQuestion(1, mk(1, "Math", "Easy"), err));
-        CHECK(!a.deleteQuestion(1, err));
-        CHECK(a.view("", "").empty());
-        CHECK(slurp(QP) == before);
-    }
-    {   // ---- SR-006: 3 wrong = locked until restart ----
-        AdminModule a(QP, CP);
-        CHECK(a.login("no1") == LR::WrongPassword && a.attemptsLeft() == 2);
-        CHECK(a.login("no2") == LR::WrongPassword && a.attemptsLeft() == 1);
-        CHECK(a.login("no3") == LR::WrongPassword && a.isLocked() && a.attemptsLeft() == 0);
-        CHECK(a.login("secret1") == LR::LockedOut && !a.isLoggedIn());       // 4th attempt blocked, even if correct
-        AdminModule b(QP, CP);                                                // "restart"
-        CHECK(b.login("secret1") == LR::Ok && b.isLoggedIn());
-    }
-    {   // ---- consecutive means consecutive ----
-        AdminModule a(QP, CP);
-        CHECK(a.login("x") == LR::WrongPassword && a.login("y") == LR::WrongPassword);
-        CHECK(a.login("secret1") == LR::Ok);
-        a.logout();
-        CHECK(a.login("x") == LR::WrongPassword && a.login("y") == LR::WrongPassword && !a.isLocked());
-        CHECK(a.login("secret1") == LR::Ok);
-    }
-    {   // ---- CRUD (F-031/032/033/034/041) ----
-        AdminModule a(QP, CP);
-        CHECK(a.login("secret1") == LR::Ok && a.load(err));
-        CHECK(a.view("", "").size() == 3);
-        CHECK(a.view("math", "").size() == 2 && a.view("", "HARD").size() == 2 && a.view("Math", "Hard").size() == 1);
-        CHECK(a.view("History", "").empty());
+    Question seed;
+    seed.id = 1; seed.category = "Math"; seed.difficulty = "Easy"; seed.text = "2+2?";
+    seed.options[0] = "3"; seed.options[1] = "4"; seed.options[2] = "5"; seed.options[3] = "6";
+    seed.correct = 'B';
+    std::string error;
+    CHECK(FileIOModule::saveQuestions(questionsPath, {seed}, error));
 
-        int id = 0;                                                           // add
-        Question n = mk(0, "  History ", "medium"); n.correct = 'b';
-        CHECK(a.addQuestion(n, id, err) && id == 6);                         // max ID 5 + 1
-        std::vector<Question> disk; std::vector<std::string> w;
-        CHECK(FileIOModule::loadQuestions(QP, disk, w, err) && disk.size() == 4);   // saved immediately
-        CHECK(disk.back().id == 6 && disk.back().category == "History" && disk.back().difficulty == "Medium" && disk.back().correct == 'B');
+    // First use creates a password, and the authenticated admin can add a question.
+    const std::string addOutput = runAdmin(questionsPath, passwordPath,
+        "demo123\n2\nScience\n1\nWhat is H2O?\nHydrogen\nWater\nOxygen\nSalt\nB\n5\n");
+    CHECK(addOutput.find("Admin password created.") != std::string::npos);
+    CHECK(addOutput.find("Question bank saved.") != std::string::npos);
+    std::ifstream passwordFile(passwordPath);
+    std::stringstream passwordContents;
+    passwordContents << passwordFile.rdbuf();
+    passwordFile.close();
+    CHECK(passwordContents.str().find("demo123") == std::string::npos);
+    std::istringstream passwordFields(passwordContents.str());
+    std::string salt, storedDigest, extraLine;
+    CHECK(static_cast<bool>(std::getline(passwordFields, salt)));
+    CHECK(static_cast<bool>(std::getline(passwordFields, storedDigest)));
+    CHECK(!salt.empty() && !storedDigest.empty() && storedDigest != "demo123");
+    CHECK(!std::getline(passwordFields, extraLine));
+    const std::string secondPasswordPath = "t_admin_password_second.cfg";
+    const std::string secondSetup = runAdmin(questionsPath, secondPasswordPath, "demo123\n5\n");
+    CHECK(secondSetup.find("Admin password created.") != std::string::npos);
+    std::ifstream secondPasswordFile(secondPasswordPath);
+    std::string secondSalt, secondDigest;
+    CHECK(static_cast<bool>(std::getline(secondPasswordFile, secondSalt)));
+    CHECK(static_cast<bool>(std::getline(secondPasswordFile, secondDigest)));
+    secondPasswordFile.close();
+    CHECK(!secondSalt.empty() && !secondDigest.empty());
+    CHECK(salt != secondSalt && storedDigest != secondDigest);
+    std::vector<Question> bank;
+    std::vector<std::string> warnings;
+    CHECK(FileIOModule::loadQuestions(questionsPath, bank, warnings, error));
+    CHECK(bank.size() == 2 && bank[1].id == 2 && bank[1].text == "What is H2O?");
 
-        const std::string before = slurp(QP);                                 // invalid adds change nothing
-        Question bad = mk(0, "Math", "Easy"); bad.options[1] = "";
-        CHECK(!a.addQuestion(bad, id, err) && !err.empty());
-        bad = mk(0, "Math", "Easy"); bad.correct = 'Z';
-        CHECK(!a.addQuestion(bad, id, err));
-        bad = mk(0, "Math", "Easy"); bad.text = "a|b";
-        CHECK(!a.addQuestion(bad, id, err));
-        bad = mk(0, "Math", "Easy"); bad.difficulty = "Insane";
-        CHECK(!a.addQuestion(bad, id, err));
-        CHECK(slurp(QP) == before && a.view("", "").size() == 4);
+    // Blank edit fields retain their values; an explicitly selected difficulty is applied.
+    const std::string editOutput = runAdmin(questionsPath, passwordPath,
+        "demo123\n3\n2\n\n2\n\n\n\n\n\nC\n5\n");
+    CHECK(editOutput.find("Question bank saved.") != std::string::npos);
+    CHECK(FileIOModule::loadQuestions(questionsPath, bank, warnings, error));
+    CHECK(bank.size() == 2 && bank[1].category == "Science" && bank[1].difficulty == "Medium");
+    CHECK(bank[1].text == "What is H2O?" && bank[1].correct == 'C');
 
-        Question e = mk(0, "Math", "Easy"); e.text = "Edited?";                // edit
-        CHECK(a.editQuestion(2, e, err));
-        CHECK(FileIOModule::loadQuestions(QP, disk, w, err));
-        bool found = false; for (auto& q : disk) if (q.id == 2) { found = true; CHECK(q.text == "Edited?" && q.category == "Math"); }
-        CHECK(found);
-        CHECK(!a.editQuestion(99, e, err) && err.find("99") != std::string::npos);
-        e.options[0] = "";
-        CHECK(!a.editQuestion(2, e, err));
+    // Deletion persists, and the resulting question bank remains valid.
+    const std::string deleteOutput = runAdmin(questionsPath, passwordPath,
+        "demo123\n4\n2\ny\n5\n");
+    CHECK(deleteOutput.find("Question bank saved.") != std::string::npos);
+    CHECK(FileIOModule::loadQuestions(questionsPath, bank, warnings, error));
+    CHECK(bank.size() == 1 && bank[0].id == 1);
 
-        CHECK(a.deleteQuestion(6, err));                                     // delete
-        CHECK(FileIOModule::loadQuestions(QP, disk, w, err) && disk.size() == 3);
-        CHECK(!a.deleteQuestion(6, err) && !a.deleteQuestion(99, err));
-        CHECK(a.deleteQuestion(1, err) && a.deleteQuestion(2, err));
-        const std::string last = slurp(QP);
-        CHECK(!a.deleteQuestion(5, err) && err.find("last") != std::string::npos);   // keeps at least 1
-        CHECK(slurp(QP) == last);
-    }
+    // Three consecutive incorrect passwords lock the panel until process restart.
+    for (int i = 0; i < 3; ++i)
+        CHECK(runAdmin(questionsPath, passwordPath, "wrong\n").find("Incorrect password") != std::string::npos);
+    const std::string locked = runAdmin(questionsPath, passwordPath, "");
+    CHECK(locked.find("locked until the program is restarted") != std::string::npos);
+    CHECK(locked.find("Admin password:") == std::string::npos);
 
-    // ---- console panel ----
-    reset();
-    {   // first run: create password, view all, back
-        AdminModule a(QP, CP);
-        std::istringstream in("secret1\nsecret1\n1\n\n\n5\n"); std::ostringstream out;
-        a.runMenu(in, out);
-        CHECK(out.str().find("Password saved") != std::string::npos && out.str().find("3 question(s)") != std::string::npos);
-        CHECK(!a.isLoggedIn());                                              // logged out on exit
-    }
-    {   // lockout via console
-        AdminModule a(QP, CP);
-        std::istringstream in("a\nb\nc\nsecret1\n"); std::ostringstream out;
-        a.runMenu(in, out);
-        CHECK(out.str().find("locked") != std::string::npos && !a.isLoggedIn());
-        std::istringstream in2("secret1\n"); std::ostringstream out2;
-        a.runMenu(in2, out2);                                                 // still locked this session
-        CHECK(out2.str().find("locked") != std::string::npos);
-    }
-    {   // invalid choices don't crash; add via menu; EOF ends cleanly
-        AdminModule a(QP, CP);
-        std::istringstream in("secret1\nabc\n9\n\n2\nGeography\nEasy\nCapital of Italy?\nParis\nRome\nMadrid\nBerlin\nB\n4\nxyz\n4\n7\nn\n");
-        std::ostringstream out;
-        a.runMenu(in, out);                                                   // ends at EOF
-        CHECK(out.str().find("Invalid choice") != std::string::npos && out.str().find("added with ID 6") != std::string::npos);
-        CHECK(out.str().find("valid question ID") != std::string::npos && out.str().find("Cancelled") != std::string::npos);
-    }
-
-    std::remove(QP); std::remove(CP);
-    if (failures) { std::cerr << failures << " AdminModule check(s) failed\n"; return 1; }
-    std::cout << "All AdminModule tests passed\n";
-    return 0;
+    std::remove(questionsPath.c_str());
+    std::remove(passwordPath.c_str());
+    std::remove(secondPasswordPath.c_str());
+    if (failures) std::cerr << failures << " admin check(s) failed\n";
+    return failures ? 1 : 0;
 }

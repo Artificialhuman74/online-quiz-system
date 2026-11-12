@@ -11,13 +11,26 @@ foreach(var QUIZ INPUT EXPECT)
         message(FATAL_ERROR "run_system_test.cmake: ${var} is not set")
     endif()
 endforeach()
+if(NOT DEFINED WORKDIR OR NOT DEFINED QUESTIONS)
+    message(FATAL_ERROR "run_system_test.cmake: WORKDIR and QUESTIONS must be set")
+endif()
 if(NOT EXISTS "${EXPECT}")
     message(FATAL_ERROR "Missing expectations file: ${EXPECT}")
+endif()
+
+# Every system test gets a fresh private data directory. Tests can safely exercise
+# password creation and question/result persistence without changing the checkout.
+file(MAKE_DIRECTORY "${WORKDIR}/data")
+file(COPY "${QUESTIONS}" DESTINATION "${WORKDIR}/data")
+file(REMOVE "${WORKDIR}/data/admin.cfg" "${WORKDIR}/data/results.txt")
+if(DEFINED RESULTS AND EXISTS "${RESULTS}")
+    configure_file("${RESULTS}" "${WORKDIR}/data/results.txt" COPYONLY)
 endif()
 
 execute_process(
     COMMAND "${QUIZ}"
     INPUT_FILE "${INPUT}"
+    WORKING_DIRECTORY "${WORKDIR}"
     OUTPUT_VARIABLE out
     ERROR_VARIABLE err
     RESULT_VARIABLE rc
@@ -31,6 +44,14 @@ file(STRINGS "${EXPECT}" expected_lines)
 set(rest "${out}")
 foreach(line IN LISTS expected_lines)
     if(line STREQUAL "" OR line MATCHES "^#")
+        continue()
+    endif()
+    if(line MATCHES "^NOT:")
+        string(SUBSTRING "${line}" 4 -1 snippet)
+        string(FIND "${out}" "${snippet}" pos)
+        if(NOT pos EQUAL -1)
+            message(FATAL_ERROR "Unexpected output found: '${snippet}'\n--- stdout ---\n${out}")
+        endif()
         continue()
     endif()
     string(FIND "${rest}" "${line}" pos)

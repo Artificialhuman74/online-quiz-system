@@ -1,0 +1,11 @@
+# Check leaderboard ordering, then the selected player's saved history.
+Leaderboard
+1. Alice | Science | 5/5 (100.0%)
+2. Bob | Science | 9/10 (90.0%)
+3. Alice | Math | 8/10 (80.0%)
+10. Ivan | Math | 1/10 (10.0%)
+NOT:11. Last | Math | 0/10
+Past Attempts: Alice
+Science | 5/5 (100.0%)
+Math | 8/10 (80.0%)
+Goodbye!
