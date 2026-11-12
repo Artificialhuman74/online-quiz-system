@@ -93,7 +93,7 @@ int main() {
     // =========================================================================
     // QZ-NF-002 / TC-Rel-01: Reliability & Crash/Data Loss Resistance
     // The system shall not lose previously saved quiz results or question data
-    // if application terminates or file replacement fails mid-session.
+    // if file replacement fails (a process-kill test is manual)
     // =========================================================================
     {
         std::cout << "  [QZ-NF-002 / TC-Rel-01] Testing atomic replace & failure durability...\n";
