@@ -284,7 +284,7 @@ void run(const std::string& questionsPath, const std::string& passwordPath) {
         std::vector<std::string> warnings;
         std::string error;
         const bool loaded = FileIOModule::loadQuestions(questionsPath, bank, warnings, error);
-        if (!loaded) { std::cerr << error << '\n'; continue; }
+        if (!loaded && choice != 5) { std::cerr << error << '\n'; continue; }
         for (const auto& warning : warnings) std::cerr << "Warning: " << warning << '\n';
         if (choice == 1) {
             std::vector<std::string> categories;
